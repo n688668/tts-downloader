@@ -1,6 +1,18 @@
 [
-  "con gà",
-  "con mèo",
-  "quả chuối",
-  "xe đạp"
+  {
+    "name": "ong-noi",
+    "text": "ông nội"
+  },
+  {
+    "name": "ba-noi",
+    "text": "bà nội"
+  },
+  {
+    "name": "ong-ngoai",
+    "text": "ông ngoại"
+  },
+  {
+    "name": "ba-ngoai",
+    "text": "bà ngoại"
+  }
 ]

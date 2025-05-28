@@ -2,7 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
 const dotenv = require('dotenv')
-const { removeVietnameseTones } = require('./utils')
 
 dotenv.config()
 
@@ -20,13 +19,14 @@ async function waitForAudioReady(asyncUrl, maxWait = 10000) {
     try {
       const res = await axios.head(asyncUrl)
       if (res.status === 200) return true
-    } catch {}
+    } catch { }
     await new Promise(resolve => setTimeout(resolve, 1000))
   }
   throw new Error('File not ready: ' + asyncUrl)
 }
 
-async function generateAndDownload(text) {
+async function generateAndDownload(item) {
+  const { name, text } = item
   try {
     const ttsRes = await axios.post('https://api.fpt.ai/hmi/tts/v5', text, {
       headers: {
@@ -40,7 +40,7 @@ async function generateAndDownload(text) {
     const asyncUrl = ttsRes.data.async
     await waitForAudioReady(asyncUrl)
 
-    const filename = removeVietnameseTones(text) + '.mp3'
+    const filename = `${name}.mp3` // 💡 Đặt tên theo số
     const outputPath = path.join(OUTPUT_DIR, filename)
 
     const audioStream = await axios.get(asyncUrl, { responseType: 'stream' })
@@ -61,8 +61,8 @@ async function generateAndDownload(text) {
 }
 
 async function run() {
-  for (const text of texts) {
-    await generateAndDownload(text)
+  for (const item of texts) {
+    await generateAndDownload(item)
   }
 }
 
