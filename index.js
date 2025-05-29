@@ -11,6 +11,7 @@ const OUTPUT_DIR = path.join(__dirname, 'downloads')
 
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR)
 
+// texts.json là mảng chuỗi đơn giản
 const texts = require('./texts.json')
 
 async function waitForAudioReady(asyncUrl, maxWait = 10000) {
@@ -25,8 +26,15 @@ async function waitForAudioReady(asyncUrl, maxWait = 10000) {
   throw new Error('File not ready: ' + asyncUrl)
 }
 
-async function generateAndDownload(item) {
-  const { name, text } = item
+async function generateAndDownload(rawName) {
+  let name = rawName
+  let text = rawName
+
+  // Thêm dấu '.' nếu text < 3 ký tự
+  while (text.length < 3) {
+    text += '.'
+  }
+
   try {
     const ttsRes = await axios.post('https://api.fpt.ai/hmi/tts/v5', text, {
       headers: {
@@ -40,7 +48,7 @@ async function generateAndDownload(item) {
     const asyncUrl = ttsRes.data.async
     await waitForAudioReady(asyncUrl)
 
-    const filename = `${name}.mp3` // 💡 Đặt tên theo số
+    const filename = `${name}.mp3`
     const outputPath = path.join(OUTPUT_DIR, filename)
 
     const audioStream = await axios.get(asyncUrl, { responseType: 'stream' })
@@ -56,13 +64,13 @@ async function generateAndDownload(item) {
       writer.on('error', reject)
     })
   } catch (err) {
-    console.error(`❌ Failed for "${text}":`, err.message)
+    console.error(`❌ Failed for "${rawName}":`, err.message)
   }
 }
 
 async function run() {
-  for (const item of texts) {
-    await generateAndDownload(item)
+  for (const name of texts) {
+    await generateAndDownload(name)
   }
 }
 
