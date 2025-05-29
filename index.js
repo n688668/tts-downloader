@@ -10,12 +10,17 @@ const answers = await inquirer.prompt([
     choices: [
       { name: 'English', value: 'english' },
       { name: 'Vietnamese', value: 'vietnamese' },
+      new inquirer.Separator(),
+      { name: 'Thoát', value: 'exit' },
     ],
   },
 ]);
 
 if (answers.language === 'english') {
   runEnglish();
-} else {
+} else if (answers.language === 'vietnamese') {
   runVietnamese();
+} else {
+  console.log('👋 Tạm biệt!');
+  process.exit(0);
 }
