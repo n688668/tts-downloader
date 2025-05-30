@@ -1,69 +1,34 @@
-const fs = require('fs')
-const path = require('path')
-const axios = require('axios')
-const dotenv = require('dotenv')
+import inquirer from 'inquirer';
+import runEnglish from './english.js';
+import runVietnamese from './vietnamese.js';
+import runVietnamesev2 from './vietnamesev2.js';
+import runRename from './rename.js';
 
-dotenv.config()
+const answers = await inquirer.prompt([
+  {
+    type: 'list',
+    name: 'language',
+    message: 'Bạn muốn chạy file nào?',
+    choices: [
+      { name: 'English (text only)', value: 'english' },
+      { name: 'Vietnamese (text only)', value: 'vietnamese' },
+      { name: 'Vietnamese (text+slug)', value: 'vietnamesev2' },
+      { name: 'Rename Files', value: 'rename' },
+      new inquirer.Separator(),
+      { name: 'Thoát', value: 'exit' },
+    ],
+  },
+]);
 
-const API_KEY = process.env.FPT_API_KEY
-const VOICE = 'thuminh'
-const OUTPUT_DIR = path.join(__dirname, 'downloads')
-
-if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR)
-
-const texts = require('./texts.json')
-
-async function waitForAudioReady(asyncUrl, maxWait = 10000) {
-  const start = Date.now()
-  while (Date.now() - start < maxWait) {
-    try {
-      const res = await axios.head(asyncUrl)
-      if (res.status === 200) return true
-    } catch { }
-    await new Promise(resolve => setTimeout(resolve, 1000))
-  }
-  throw new Error('File not ready: ' + asyncUrl)
+if (answers.language === 'english') {
+  runEnglish();
+} else if (answers.language === 'vietnamese') {
+  runVietnamese();
+} else if (answers.language === 'vietnamesev2') {
+  runVietnamesev2();
+} else if (answers.language === 'rename') {
+  runRename();
+} else {
+  console.log('👋 Tạm biệt!');
+  process.exit(0);
 }
-
-async function generateAndDownload(item) {
-  const { name, text } = item
-  try {
-    const ttsRes = await axios.post('https://api.fpt.ai/hmi/tts/v5', text, {
-      headers: {
-        'api-key': API_KEY,
-        'speed': '1.0',
-        'voice': VOICE,
-        'Content-Type': 'text/plain',
-      },
-    })
-
-    const asyncUrl = ttsRes.data.async
-    await waitForAudioReady(asyncUrl)
-
-    const filename = `${name}.mp3` // 💡 Đặt tên theo số
-    const outputPath = path.join(OUTPUT_DIR, filename)
-
-    const audioStream = await axios.get(asyncUrl, { responseType: 'stream' })
-    const writer = fs.createWriteStream(outputPath)
-
-    audioStream.data.pipe(writer)
-
-    return new Promise((resolve, reject) => {
-      writer.on('finish', () => {
-        console.log(`✅ Saved: ${filename}`)
-        resolve()
-      })
-      writer.on('error', reject)
-    })
-  } catch (err) {
-    console.error(`❌ Failed for "${text}":`, err.message)
-  }
-}
-
-async function run() {
-  for (const item of texts) {
-    await generateAndDownload(item)
-  }
-}
-
-run()
