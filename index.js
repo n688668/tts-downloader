@@ -1,6 +1,7 @@
 import inquirer from 'inquirer';
 import runEnglish from './english.js';
 import runVietnamese from './vietnamese.js';
+import runVietnamesev2 from './vietnamesev2.js';
 
 const answers = await inquirer.prompt([
   {
@@ -8,8 +9,9 @@ const answers = await inquirer.prompt([
     name: 'language',
     message: 'Bạn muốn chạy file nào?',
     choices: [
-      { name: 'English', value: 'english' },
-      { name: 'Vietnamese', value: 'vietnamese' },
+      { name: 'English (text only)', value: 'english' },
+      { name: 'Vietnamese (text only)', value: 'vietnamese' },
+      { name: 'Vietnamese (text+slug)', value: 'vietnamesev2' },
       new inquirer.Separator(),
       { name: 'Thoát', value: 'exit' },
     ],
@@ -20,6 +22,8 @@ if (answers.language === 'english') {
   runEnglish();
 } else if (answers.language === 'vietnamese') {
   runVietnamese();
+} else if (answers.language === 'vietnamesev2') {
+  runVietnamesev2();
 } else {
   console.log('👋 Tạm biệt!');
   process.exit(0);
