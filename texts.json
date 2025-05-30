@@ -1,18 +1,7 @@
 [
-  {
-    "name": "ong-noi",
-    "text": "ông nội"
-  },
-  {
-    "name": "ba-noi",
-    "text": "bà nội"
-  },
-  {
-    "name": "ong-ngoai",
-    "text": "ông ngoại"
-  },
-  {
-    "name": "ba-ngoai",
-    "text": "bà ngoại"
-  }
+  { "name": "à", "text": "à.." },
+  { "name": "ả", "text": "ả.." },
+  { "name": "ã", "text": "ã.." },
+  { "name": "á", "text": "á.." },
+  { "name": "ạ", "text": "ạ.." }
 ]
