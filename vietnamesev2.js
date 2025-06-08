@@ -19,6 +19,8 @@ const RETRY_FAILED_DELAY = 60 * 1000
 const MAX_WAIT_TIME = 10000
 const DEST_DIR = path.join('D:/nuxt-test/fork/edu-app/public/sounds/vietnamese/words')
 
+// const DEST_DIR = path.join('D:/Work/App/my-edu-app/public/sounds/vietnamese/words')
+
 if (!fs.existsSync(OUTPUT_DIR)) fs.mkdirSync(OUTPUT_DIR, { recursive: true })
 
 function loadTexts() {
